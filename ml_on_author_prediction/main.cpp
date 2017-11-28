@@ -21,8 +21,6 @@
 using namespace cv;
 using namespace std;
 
-
-
 void NBayesClassifier(Mat & X_train,Mat & y_train,Mat & X_test,Mat & y_test,Mat & y_test_Prob){
 cout << "NBayes learn"<<endl;
 
@@ -226,8 +224,17 @@ void Test(){
     //cout << FMesure(y,y,0) << endl;
 
 }
+
+
 int main( int argc, char *argv[] )
 {
+    const Ptr<ml::TrainData> trainData= cv::ml::TrainData::loadFromCSV("/Users/hugotouvron/Desktop/Datatest.csv",1);
+
+    Mat a=trainData->getSamples();
+    Mat b=trainData->getResponses();
+    cout<< a << endl;
+    cout<< b << endl;
+
     Test();
     //QApplication a(argc, argv);
     //MainWindow w;
