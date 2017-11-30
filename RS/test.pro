@@ -8,7 +8,8 @@ SOURCES += \
     dataset.cpp \
     randomtree.cpp \
     randomforest.cpp \
-    main2.cpp
+    main2.cpp \
+    test.cpp
 
 HEADERS += \
     dataset.h \
@@ -19,4 +20,5 @@ HEADERS += \
     randomtree.h \
     leafnode.h \
     splitnode.h \
-    randomforest.h
+    randomforest.h \
+    test.h

@@ -26,16 +26,17 @@ class ProbaMap : public std::map<std::string, double>
      */
 
     inline double entropy( void ) const
-    {
-      double entropy = 0.0;
-      for (ProbaMap::const_iterator iter = this->begin();
-        iter != this->end(); ++iter )
-      {
-        if ( iter->second > 0.0 )
-        {
-          entropy -= iter->second * log10(iter->second) / log10(2.0);
-        }
-      }
-      return entropy;
+            {
+              double entropy = 0.0;
+              for (
+                ProbaMap::const_iterator iter = this->begin();
+                iter != this->end(); ++iter )
+              {
+                if ( iter->second > 0.0 )
+                {
+                  entropy -= iter->second * log10(iter->second) / log10(2.0);
+                }
+              }
+              return entropy;
     }
 };

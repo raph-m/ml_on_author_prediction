@@ -3,6 +3,7 @@
 #include <fstream>
 #include <queue>
 #include <stdlib.h>
+#include <set>
 
 #include "randomforest.h"
 
@@ -49,7 +50,7 @@ namespace std {
   }
 
 }
-
+/*
 int main( const int argc, const char ** argv ) {
 
   // Load in dataset.
@@ -73,16 +74,30 @@ int main( const int argc, const char ** argv ) {
   Dataset dsr( row_count, col_count );
 
   // Convert data.
+
+  int class_no = 0;
+  set<int> classes;
+
   for ( unsigned int row = 0; row < row_count; ++row ) {
     // Tokenize row.
     vector<string> tokens = Tokenize(lines[row], "\t");
 
     // First element is the ID. Skip.
-    // Second element is the class
+    // Last element is the class
 
     // Fetch the features
-    for ( unsigned int col = 0; col < col_count; ++col )
+
+    for ( unsigned int col = 0; col < col_count - 1; ++col ) {
       dsr[row][col] = atof(tokens[col + 1].c_str());
+    }
+
+    float class_value = atof(tokens[col_count]).c_str();
+    if (classes.find(class_value) != classes.end()) {
+        classes.insert(class_value);
+        class_no += 1;
+    }
+
+    dsr[row][col_count - 1] = atof(tokens[col + 1].c_str());
 
   }
 
@@ -99,7 +114,6 @@ int main( const int argc, const char ** argv ) {
   split_keys.erase("class");
 
   // généralisation multiclass 1 vs. all
-  int class_no = 2;
 
   // les différents classificateurs 1 vs. all
   queue<RandomForest*> forest;
@@ -107,42 +121,78 @@ int main( const int argc, const char ** argv ) {
   for (int i=0; i < class_no;i++ ) {
 
       // oversampling
+      // remplit avec un tiers de i
 
       Dataset dsr_i( row_count, col_count );
 
-      int freq_class_i = 0;
-      vector<int> rows_i;
+      int count_class_i = 0;
+      set<int> rows_i;
 
       for ( unsigned int row = 0; row < row_count; ++row ){
           if (fabs(dsr[row][0]- i) < 0.5){
-              freq_class_i++;
-              rows_i.push_back(row);
+              count_class_i++;
+              rows_i.insert(row);
           }
       }
 
-      freq_class_i /= row_count;
-
+      set<int> rows_to_fill;
       for ( unsigned int row = 0; row < row_count; ++row ){
-          if (fabs(dsr[row][0]- i) < 0.5){
-              freq_class_i++;
-              rows_i.push_back(row);
+          rows_to_fill.insert(row);
+      }
+
+      int counter = 0;
+      for ( unsigned int row = 0; row < row_count; ++row ){
+          if (rows_i.find(row) != rows_i.end()){
+              dsr_i[row][col_count] = 1.0;
+              for ( unsigned int col = 0; col < col_count - 1; ++col ){
+                  dsr_i[row][col] = dsr[row][col];
+              }
+              rows_to_fill.erase(row);
           }
       }
 
-      // prepare the classes
-      // 1 vs. all
-      for ( unsigned int row = 0; row < row_count; ++row ){
-        if (fabs(dsr[row][0]- i) < 0.5)
-            dsr[row][0] = 1.0;
-        else
-            dsr[row][0] = 0.0;
+      while (counter < row_count / 3 - count_class_i) {
+
+          int random_row = rows_to_fill.size()*rand() / RAND_MAX;
+          set<int>::const_iterator ite(rows_to_fill.begin());
+          advance(ite,random_row);
+          int fill_row = *ite;
+
+          int randomize = (count_class_i - 1)*rand() / RAND_MAX;
+          set<int>::const_iterator it(rows_i.begin());
+          advance(it,randomize);
+          int curr_row = *it;
+
+          dsr_i[fill_row][0] = 1.0;
+          for ( unsigned int col = 1; col < col_count; ++col ){
+              dsr_i[fill_row][col] = dsr[curr_row][col];
+          }
+
+          rows_to_fill.erase(fill_row);
+          counter++;
+      }
+
+      while (!rows_to_fill.empty()) {
+
+          int fill_row = *(rows_to_fill.begin());
+
+          int taken_row = row_count * rand() / RAND_MAX;
+
+          if(fabs(dsr[taken_row][0] - i) > 0.5) {
+              dsr_i[taken_row][0] = 0.0;
+              for ( unsigned int col = 1; col < col_count; ++col ){
+                  dsr_i[fill_row][col] = dsr[taken_row][col];
+              }
+              rows_to_fill.erase(fill_row);
+          }
+
       }
 
       // Data should be loaded. Time to grow the forest.
       cout << "Grow..." << endl;
       RandomForest forest_classifier;
 
-      forest_classifier.grow_forest(dsr, 0, (dsr.get_row()*4) / 5, split_keys, 32, 300 );
+      forest_classifier.grow_forest(dsr_i, 0, (dsr_i.get_row()*4) / 5, split_keys, 32, 300 );
 
       forest.push(&forest_classifier);
 
@@ -154,10 +204,10 @@ int main( const int argc, const char ** argv ) {
       unsigned int fp = 0;
       unsigned int fn = 0;
 
-      for ( unsigned int row = 0; row < dsr.get_row(); ++row) {
-        unsigned int votes1 = forest_classifier.classify(dsr[row]);
-        bool c = votes1 > dsr.get_row()-votes1;
-        bool t = dsr[row][0] == 1.0;
+      for ( unsigned int row = 0; row < dsr_i.get_row(); ++row) {
+        unsigned int votes1 = forest_classifier.classify(dsr_i[row]);
+        bool c = votes1 > dsr_i.get_row()-votes1;
+        bool t = dsr_i[row][0] == 1.0;
 
         if ( c && t ) ++tp;
         else if ( c && !t ) ++fp;
@@ -280,3 +330,4 @@ int main( const int argc, const char ** argv ) {
   return 0;
 
 }
+*/

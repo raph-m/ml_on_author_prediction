@@ -125,21 +125,21 @@ DatasetSplitPair Dataset::split(
 double Dataset::IG(
   const unsigned int decision_column,
   const unsigned int attribute_column,
-  // pointeur sur le début des thresholds à tester
+  // référence qui va contenir le meilleur seuil
   double & threshold )
 {
   // calcul de l'entropie de catégorisation selon la decision_column
-  ProbaMap enum_dc = count_thresh( decision_column, 0.0 );
+  ProbaMap enum_dc = count_thresh( decision_column, threshold );
   double class_entropy = enum_dc.entropy();
+
 
   // itération sur tous les seuils possibles
   ThreshVector thresholds = get_thresh( attribute_column );
   double best_split_threshold = -1e199;
   double best_split_ig        = -1000.0;
-  for (
-    ThreshVector::const_iterator iter = thresholds.begin();
-    iter != thresholds.end(); ++iter )
-  {
+  for ( ThreshVector::const_iterator iter = thresholds.begin();
+    iter != thresholds.end(); ++iter ) {
+
     double split_ig = class_entropy;
     double threshold = *iter;
 
@@ -152,24 +152,25 @@ double Dataset::IG(
     // Calcul de l'entropie de la partie LE
     ProbaMap enum_dc_le = split_pair.ds_le.count_thresh( decision_column, 0.0 );
     double class_entropy_le = enum_dc_le.entropy();
-    split_ig -= split_prob_le * class_entropy_le;
+    split_ig = split_ig - split_prob_le * class_entropy_le;
 
     // Calcul de l'entropie de la partie G
     ProbaMap enum_dc_g = split_pair.ds_g.count_thresh( decision_column, 0.0 );
     double class_entropy_g = enum_dc_g.entropy();
-    split_ig -= split_prob_g * class_entropy_g;
+    split_ig = split_ig - split_prob_g * class_entropy_g;
 
     // gain d'information? si oui ce nouveau threshold devient la star à comparer
-    if ( split_ig > best_split_ig )
-    {
+    if ( split_ig > best_split_ig ) {
       best_split_ig = split_ig;
       best_split_threshold = threshold;
     }
+
   }
 
   /* on a trouvé le meilleur seuil de séparation
    * et le pointeur threshold pointe vers cette valeur après l'appel de IG
    */
+
   threshold = best_split_threshold;
   return best_split_ig;
 }

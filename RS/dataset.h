@@ -151,6 +151,8 @@ class Dataset
       return keys;
     }
 
+    friend class test; // pour les tests
+
   private:
     KeyList                   keys;
     IntegerCol             data_ref;
