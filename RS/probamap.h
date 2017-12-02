@@ -4,7 +4,7 @@
  * auquel on ajoute l'entropie du jeu de données
  */
 
-// la clé est le string, la valeur double associée est la valeur
+// la clé est le string, la valeur float associée est la valeur
 
 class ProbaMap : public std::map<std::string, double>
 {
