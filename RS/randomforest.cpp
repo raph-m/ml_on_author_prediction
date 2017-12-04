@@ -21,15 +21,10 @@ void RandomForest::grow_forest(
     ResultQueue results;
 
     // initialize tasks
-    unsigned int task_count = 16;
-    unsigned int trees_per_task = tree_count / task_count;
-    vector<ForestTask*> task_list;
-    for (unsigned int task_id = 0; task_id < task_count; ++task_id) {
-        ForestTask *task = new ForestTask(
+    ForestTask *task = new ForestTask(
                     dataset, decision_column, bootstrap_size, split_keys,
-                    keys_per_node, trees_per_task, &results);
-        task -> spawn();
-    }
+                    keys_per_node, tree_count, &results);
+    task -> spawn();
 
     // get results
     unsigned int on_tree = 0;
@@ -37,7 +32,7 @@ void RandomForest::grow_forest(
         RandomTree* result = results.pop();
         forest.push_back(result);
         ++on_tree;
-        if ((on_tree%50) == 0) {
+        if ((on_tree%1) == 0) {
             cout << " ; " << on_tree << " of " << tree_count << endl;
         }
     }

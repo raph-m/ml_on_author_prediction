@@ -12,5 +12,7 @@ public:
 
     void test_classify (void);
 
+    void test_forest (void);
+
 
 };

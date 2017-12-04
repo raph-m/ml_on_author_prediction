@@ -50,6 +50,7 @@ namespace std {
   }
 
 }
+
 /*
 int main( const int argc, const char ** argv ) {
 
@@ -68,7 +69,7 @@ int main( const int argc, const char ** argv ) {
   // Create dataset.
   unsigned int row_count = lines.size();
   unsigned int col_count = l1t.size() - 1; // ignore ID
-  unsigned int feature_count = col_count; // Class and n-1 features.
+  unsigned int feature_count = col_count - 1; // ignore class and ID
 
   // Dataset.
   Dataset dsr( row_count, col_count );
@@ -80,14 +81,14 @@ int main( const int argc, const char ** argv ) {
 
   for ( unsigned int row = 0; row < row_count; ++row ) {
     // Tokenize row.
-    vector<string> tokens = Tokenize(lines[row], "\t");
+    vector<string> tokens = Tokenize(lines[row], ",");
 
     // First element is the ID. Skip.
     // Last element is the class
 
     // Fetch the features
 
-    for ( unsigned int col = 0; col < col_count - 1; ++col ) {
+    for ( unsigned int col = 0; col < feature_count; ++col ) {
       dsr[row][col] = atof(tokens[col + 1].c_str());
     }
 
@@ -97,7 +98,8 @@ int main( const int argc, const char ** argv ) {
         class_no += 1;
     }
 
-    dsr[row][col_count - 1] = atof(tokens[col + 1].c_str());
+    // classe
+    dsr[row][col_count - 1] = atof(tokens[col_count].c_str());
 
   }
 
@@ -121,7 +123,7 @@ int main( const int argc, const char ** argv ) {
   for (int i=0; i < class_no;i++ ) {
 
       // oversampling
-      // remplit avec un tiers de i
+      // remplit avec un quart de i
 
       Dataset dsr_i( row_count, col_count );
 
@@ -151,7 +153,7 @@ int main( const int argc, const char ** argv ) {
           }
       }
 
-      while (counter < row_count / 3 - count_class_i) {
+      while (counter < row_count / 4 - count_class_i) {
 
           int random_row = rows_to_fill.size()*rand() / RAND_MAX;
           set<int>::const_iterator ite(rows_to_fill.begin());
@@ -192,7 +194,7 @@ int main( const int argc, const char ** argv ) {
       cout << "Grow..." << endl;
       RandomForest forest_classifier;
 
-      forest_classifier.grow_forest(dsr_i, 0, (dsr_i.get_row()*4) / 5, split_keys, 32, 300 );
+      forest_classifier.grow_forest(dsr_i, col_count - 1, (dsr_i.get_row()*4) / 5, split_keys, 32, 300 );
 
       forest.push(&forest_classifier);
 

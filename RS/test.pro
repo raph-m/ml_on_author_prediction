@@ -7,9 +7,9 @@ CONFIG += thread
 SOURCES += \
     dataset.cpp \
     randomtree.cpp \
-    randomforest.cpp \
     main2.cpp \
     testDataPrep.cpp \
+    randomforest.cpp \
     testRandom.cpp
 
 HEADERS += \
@@ -21,6 +21,6 @@ HEADERS += \
     randomtree.h \
     leafnode.h \
     splitnode.h \
-    randomforest.h \
     testDataPrep.h \
-    testRandom.h
+    testRandom.h \
+    randomforest.h

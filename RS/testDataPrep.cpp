@@ -4,7 +4,7 @@
 #include <iostream>
 
 using namespace std;
-
+/*
 
 void test_entropy (void) {
 
@@ -410,7 +410,7 @@ void test_splitnode (void) {
     if (dynamic_cast<SplitNode*>(set[0]) != newChild)
         cout << "SplitNode 7 failed" << endl;
 
-}
+} */
 
 /*
 int main( const int argc, const char ** argv ) {

@@ -2,9 +2,6 @@
 
 #include "randomtree.h"
 
-#include <pthread.h>
-#include <semaphore.h>
-
 class RandomForest {
 
 public:
@@ -44,39 +41,21 @@ private:
 
     private:
 
-        // exclusion mutuelle
-        pthread_mutex_t mutex;
-
-        // semaphore : objet verrouillable
-        // avec un compteur
-        sem_t semaphore;
         Forest results;
 
     public:
 
         ResultQueue (void) {
 
-            // initialisation de mutex
-            mutex = PTHREAD_MUTEX_INITIALIZER;
-
-            //initialisation du sémaphore
-            sem_init( &semaphore, 0, 0);
-
         }
 
         void push (RandomTree * result) {
-            pthread_mutex_lock (&mutex);
             results.push_back(result);
-            pthread_mutex_unlock(&mutex);
-            sem_post (&semaphore);
         }
 
         RandomTree* pop(void) {
-            sem_wait(&semaphore);
-            pthread_mutex_lock(&mutex);
             RandomTree* result = results[results.size()-1];
             results.pop_back();
-            pthread_mutex_unlock(&mutex);
             return result;
         }
 
@@ -86,7 +65,6 @@ private:
 
     private:
 
-        pthread_t thread;
         Dataset & dataset;
         const unsigned int decision_column;
         const unsigned int bootstrap_size;
@@ -113,22 +91,7 @@ private:
                      result_queue(result_queue) {}
 
         // launches process
-        int spawn (void) {
-            return pthread_create(&thread, NULL, ForestTask::route,
-                                  reinterpret_cast<void*>(this));
-        }
-
-    private:
-
-        // class_pointer points to the task class to execute
-        static void * route (void * class_pointer) {
-            ForestTask *task = reinterpret_cast<ForestTask*>(class_pointer);
-            task->run();
-            return null(void);
-        }
-
-        void run (void){
-            // iteratively build each tree
+        void spawn (void) {
             for (unsigned int tree_index = 0; tree_index < tree_count; ++tree_index) {
                 // generate bootstrap sample
                 Dataset bootstrap = dataset.bootstrap_sample(bootstrap_size);
@@ -137,10 +100,8 @@ private:
                 tree ->grow_decision_tree(bootstrap, split_keys, keys_per_node, decision_column);
 
                 result_queue->push(tree);
-            }
+             }
         }
-
-
 
     };
 

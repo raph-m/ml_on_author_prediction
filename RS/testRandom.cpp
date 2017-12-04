@@ -8,78 +8,59 @@
 
 using namespace std;
 
-namespace test_rd
-{
-
-  vector<string> Tokenize(const string& str,const string& delimiters) {
-
-    vector<string> tokens;
-    string::size_type delimPos = 0, tokenPos = 0, pos = 0;
-
-    if(str.length() < 1)
-      return tokens;
-
-    while (true) {
-
-      delimPos = str.find_first_of(delimiters, pos);
-      tokenPos = str.find_first_not_of(delimiters, pos);
-
-      if(string::npos != delimPos) {
-        if(string::npos != tokenPos){
-          if(tokenPos<delimPos)
-            tokens.push_back(str.substr(pos,delimPos-pos));
-          else
-            tokens.push_back("");
-        }
-        else
-          tokens.push_back("");
-        pos = delimPos+1;
-      }
-      else {
-        if(string::npos != tokenPos)
-          tokens.push_back(str.substr(pos));
-        else
-          tokens.push_back("");
-        break;
-      }
-
-    return tokens;
-  }
-
-}
-
-}
-
 void test_setup_tree (void) {
 
     // charger les données test
     string line;
     vector<string> lines;
-    ifstream file("/home/redouane/Documents/data.data", ios_base::in);
+    ifstream file("data.data", ios_base::in);
     while (getline(file, line, '\n'))
         lines.push_back(line);
 
     // tokenize la première ligne
-    vector<string> l1t = test_rd::Tokenize(lines[0], ",");
-
+    vector<string> l1t;
+    std::string delimiter = ",";
+    size_t pos = 0;
+    std::string token;
+    while ((pos = lines[0].find(delimiter)) != std::string::npos) {
+        token = lines[0].substr(0, pos);
+        l1t.push_back(token);
+        lines[0].erase(0, pos + delimiter.length());
+    }
     // créer dataset
     const unsigned int row_count = lines.size();
     const unsigned int col_count = l1t.size();
+
     Dataset dsr (row_count, col_count);
 
     // convertir les données
+    dsr[0][0] = (l1t[col_count-1] == "Donate") ? 1.0 : 0.0;
+    for (unsigned int col = 1; col < col_count; ++col)
+        dsr[0][col] = atof(l1t[col - 1].c_str());
+
     unsigned int donated = 0;
-    for (unsigned int row = 0; row < dsr.get_row(); ++row) {
+    for (unsigned int row = 1; row < dsr.get_row(); ++row) {
+
         // tokenize la ligne
-        vector<string> tokens = test_rd::Tokenize(lines[row], ",");
+        vector<string> tokens;
+        std::string delimiter = ",";
+        size_t pos = 0;
+        std::string token;
+
+        while ((pos = lines[row].find(delimiter)) != std::string::npos) {
+            token = lines[row].substr(0, pos);
+            tokens.push_back(token);
+            lines[row].erase(0, pos + delimiter.length());
+        }
+
         // la class est dans la dernière colonne
         dsr[row][0] = (tokens[col_count-1] == "Donate") ? 1.0 : 0.0;
-        // récupérer les features
-        for (unsigned int col = 1; col < col_count; ++col)
-            dsr[row][col] = atof(tokens[col - 1].c_str());
-    }
 
-    cout << dsr.get_row() << endl;
+        // récupérer les features
+        for (unsigned int col = 1; col < col_count; ++col){
+            dsr[row][col] = atof(tokens[col - 1].c_str());
+        }
+    }
 
     // configurer les clefs
     Dataset::KeyList & keys = dsr.get_keys();
@@ -138,32 +119,52 @@ void test_classify (void) {
 
 }
 
-// ds2 pointeur null
-void test_setup_forest (void) {
+
+void test_forest (void) {
 
     // charger les données
     string line;
     vector<string> lines;
-    ifstream file("/home/redouane/Documents/seq.csv", ios_base::in);
+    ifstream file("seq.csv", ios_base::in);
     while (getline(file, line, '\n'))
         lines.push_back(line);
 
     // tokenize la première ligne
-    vector<string> l1t = test_rd::Tokenize(lines[0], "\t");
+    vector<string> l1t;
+    std::string delimiter = ",";
+    size_t pos = 0;
+    std::string token;
+    while ((pos = lines[0].find(delimiter)) != std::string::npos) {
+        token = lines[0].substr(0, pos);
+        l1t.push_back(token);
+        lines[0].erase(0, pos + delimiter.length());
+    }
 
     // créer le dataset
     const unsigned int row_count = lines.size();
     const unsigned int col_count = l1t.size() - 2; // on ne considère pas la classe et les ids
-    const unsigned int feature_count = col_count - 1; // classe et les features
+    const unsigned int feature_count = col_count; // classe et les features
 
     Dataset * ds = new Dataset( row_count, col_count );
     Dataset & dsr = *ds;
-    cout << dsr.get_row() << endl;
+
+    // la classe est dans la deuxième collone
+    dsr[0][0] = ( atof(l1t[1].c_str()) <= 1.0 ) ? 1.0 : 0.0;
+    for (unsigned int col = 1; col < col_count; ++col)
+        dsr[0][col] = atof(l1t[col+1].c_str());
 
     // convertir les données
-    for (unsigned int row = 0; row < row_count; ++row) {
+    for (unsigned int row = 1; row < row_count; ++row) {
         // tokenize la ligne
-        vector<string> tokens = test_rd::Tokenize(lines[row], "\t");
+        vector<string> tokens;
+        std::string delimiter = ",";
+        size_t pos = 0;
+        std::string token;
+        while ((pos = lines[row].find(delimiter)) != std::string::npos) {
+            token = lines[row].substr(0, pos);
+            tokens.push_back(token);
+            lines[row].erase(0, pos + delimiter.length());
+        }
         // la classe est dans la deuxième colonne
         dsr[row][0] = ( atof(tokens[1].c_str()) <= 1.0 ) ? 1.0 : 0.0;
         // on charge les features
@@ -172,7 +173,7 @@ void test_setup_forest (void) {
     }
 
     // configurer les clefs
-    Dataset::KeyList & keys = ds->get_keys();
+    Dataset::KeyList & keys = dsr.get_keys();
     keys["class"] = 0;
     for (unsigned int feature = 1; feature <= feature_count; ++feature) {
         stringstream feature_ident;
@@ -180,20 +181,57 @@ void test_setup_forest (void) {
         keys[feature_ident.str()] = feature;
     }
 
+    // on affecte les split_keys
+    Dataset::KeyList split_keys = ds->get_keys();
+    split_keys.erase("class");
 
+    // on fait grandir la forêt
+    cout << "Grow..." << endl;
+    RandomForest forest;
+    cout << ds->get_row() << endl;
+    forest.grow_forest(*ds, 0, ds->get_row()/3, split_keys, 16, 100);
+    cout << "Grown!" << endl;
+
+    // on classifie les données
+    unsigned int tp = 0;
+    unsigned int tn = 0;
+    unsigned int fp = 0;
+    unsigned int fn = 0;
+    for (unsigned int row = 0; row < ds->get_row(); ++row) {
+        bool c = forest.classify((*ds)[row]);
+        bool t = (*ds)[row][0] == 1.0;
+        if (c&&t)
+            ++tp;
+        else if (c&&!t)
+            ++fp;
+        else if (!c&&t)
+            ++fn;
+        else if (!c&&!t)
+            ++tn;
+        else cout << "WTF" << endl;
+    }
+
+    double accuracy = (tp + tn) * 100.0 / (tp + fp + tn + fn);
+    double precision = tp * 100.0 / (tp + fp);
+    double true_negative_rate = tn * 100.0 / (tn + fp);
+    double recall = tp * 100.0 / (tp + fn);
+    cout
+        << "Accuracy          : " << accuracy << "%\n"
+        << "Precision         : " << precision << "%\n"
+        << "True negative rate: " << true_negative_rate << "%\n"
+        << "Recall            : " << recall << endl;
 
 }
-
 
 
 
 int main( const int argc, const char ** argv ) {
 
-    test_setup_tree();
+    //test_setup_tree();
     test_tree_constructor();
     test_classify();
-
-    test_setup_forest();
+    test_forest();
 
     return 0;
 }
+
