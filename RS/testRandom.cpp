@@ -219,12 +219,12 @@ void test_forest (void) {
         << "Accuracy          : " << accuracy << "%\n"
         << "Precision         : " << precision << "%\n"
         << "True negative rate: " << true_negative_rate << "%\n"
-        << "Recall            : " << recall << endl;
+        << "Recall            : " << recall << "%\n" << endl;
 
 }
 
 
-
+/*
 int main( const int argc, const char ** argv ) {
 
     //test_setup_tree();
@@ -234,4 +234,5 @@ int main( const int argc, const char ** argv ) {
 
     return 0;
 }
+*/
 

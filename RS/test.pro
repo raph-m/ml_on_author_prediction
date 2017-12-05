@@ -7,10 +7,10 @@ CONFIG += thread
 SOURCES += \
     dataset.cpp \
     randomtree.cpp \
-    main2.cpp \
     testDataPrep.cpp \
     randomforest.cpp \
-    testRandom.cpp
+    testRandom.cpp \
+    multiclass_rs.cpp
 
 HEADERS += \
     dataset.h \
@@ -23,4 +23,5 @@ HEADERS += \
     splitnode.h \
     testDataPrep.h \
     testRandom.h \
-    randomforest.h
+    randomforest.h \
+    multiclass_rs.h
