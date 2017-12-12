@@ -38,7 +38,7 @@ const Ptr<ml::TrainData> trainData= ml::TrainData::create(X_train, ml::ROW_SAMPL
 //cv::ml::TrainData::loadFromCSV() a utiliser avec un fichier CSV
 Ptr<cv::ml::NormalBayesClassifier> normalBayesC=ml::StatModel::train<ml::NormalBayesClassifier>(trainData);
 normalBayesC->predictProb(X_test,y_test,y_test_Prob);
-cout<<y_test << endl;
+//cout<<y_test << endl;
 }
 
 void KNNClassifier(Mat & X_train,Mat & y_train,Mat & X_test,Mat & y_test){
@@ -57,7 +57,7 @@ const Ptr<ml::TrainData> trainData= ml::TrainData::create(X_train, ml::ROW_SAMPL
 //cv::ml::TrainData::loadFromCSV() a utiliser avec un fichier CSV
 Ptr<cv::ml::KNearest> knn=ml::StatModel::train<ml::KNearest>(trainData);
 knn->predict(X_test,y_test);
-cout<<y_test << endl;
+//cout<<y_test << endl;
 }
 
 void SvmClassifier(Mat & X_train,Mat & y_train,Mat & X_test,Mat & y_test){
@@ -77,16 +77,23 @@ const Ptr<ml::TrainData> trainData= ml::TrainData::create(X_train, ml::ROW_SAMPL
 
 Ptr<cv::ml::SVM> svm=ml::StatModel::train<ml::SVM>(trainData);
 svm->predict(X_test,y_test);
-cout<<y_test << endl;
+//cout<<y_test << endl;
 }
 
-cv::Scalar_<double> Accuracy(Mat & y_true,Mat & y_test){
-
-    Mat ac=y_true-y_test;
-    cv::absdiff(y_true,y_test,ac);
+float Accuracy(Mat & y_true,Mat & y_test){
+    float g=0;
+    for(int i=0;i<y_true.rows;i++){
+        if(y_true.at<int>(i,0)==y_test.at<int>(i,0))
+            g++;
+    }
+   // Mat ac=y_true-y_test;
+   // cv::absdiff(y_true,y_test,ac);
    // cout<< ac << endl;
-   cv::Scalar_<double> g=cv::sum(cv::sum((ac)));
-   cout << "accuracy="<<g[0]/ac.rows<<endl;
+  // cv::Scalar_<double> g=cv::sum(cv::sum((ac)));
+   float a = y_true.rows;
+
+   cout << "accuracy="<<g/a<<endl;
+
    return g;
 }
 
@@ -225,17 +232,106 @@ void Test(){
 
 }
 
+void fct (Mat & y ,int NombreAuteur ,double* res) {
+
+
+
+    for(int i=0;i<NombreAuteur;i++)
+        res[i]=0;
+
+    int rw=y.rows;
+    for(int i=0;i<rw;i++){
+
+        res[y.at<int>(i,0)]++;
+    }
+
+    for(int i=0;i<NombreAuteur;i++){
+        res[i]=res[i]/rw;}
+
+
+
+}
+
+Mat Execution(Mat & X, Mat & y,Mat & X_test,Mat & y_test){
+
+    Mat resKNN;
+    Mat resNB;
+    Mat resSVM;
+    Mat rendre2=Mat(X_test.rows, 1,CV_32FC1);
+
+    KNNClassifier(X,y,X_test,resKNN);
+    cout<<"Accuracy KNN"<<endl;
+    cout<<Accuracy(y_test,resKNN) << endl;
+
+    NBayesClassifier(X,y,X_test,resNB,rendre2);
+    cout<<"Accuracy NB"<<endl;
+    cout<<Accuracy(y_test,resNB) << endl;
+
+    SvmClassifier(X,y,X_test,resSVM);
+    cout<<"Accuracy SVM"<<endl;
+    cout<<Accuracy(y_test,resSVM) << endl;
+
+return resKNN;
+}
+
 
 int main( int argc, char *argv[] )
 {
-    const Ptr<ml::TrainData> trainData= cv::ml::TrainData::loadFromCSV("/Users/hugotouvron/Desktop/Datatest.csv",1);
+    //const Ptr<ml::TrainData> trainData= cv::ml::TrainData::loadFromCSV("/Users/hugotouvron/Desktop/Datatest.csv",1);
+    const Ptr<ml::TrainData> trainData= cv::ml::TrainData::loadFromCSV("/Users/hugotouvron/Desktop/apprentissage10.csv",0,0,2,String(),',');
+    const Ptr<ml::TrainData> testData= cv::ml::TrainData::loadFromCSV("/Users/hugotouvron/Desktop/test10.csv",0,0,2,String(),',');
+    const Ptr<ml::TrainData> idData= cv::ml::TrainData::loadFromCSV("/Users/hugotouvron/Desktop/test10.csv",0,0,1,String(),',');
 
-    Mat a=trainData->getSamples();
-    Mat b=trainData->getResponses();
-    cout<< a << endl;
-    cout<< b << endl;
+    Mat X=trainData->getSamples();
+    Mat y1=trainData->getResponses();
+    Mat y=y1.col(1);
 
-    Test();
+    cout<< X << endl;
+    cout<< y << endl;
+
+    Mat X_test=testData->getSamples();
+    Mat y_test1=testData->getResponses();
+    Mat y_test=y_test1.col(1);
+
+    cout<< X_test << endl;
+    cout<< y_test << endl;
+
+    Mat id =idData->getSamples();
+
+    list<int> livre;
+    for(int i=0;i<id.rows;i++){
+
+        livre.push_back(id.at<int>(i,0));
+    }
+
+    y_test1.col(1)=Execution(X,y,X_test,y_test);
+
+    cout<< 'resultat' << endl;
+    cout<< y_test1 << endl;
+
+    int NbAUT=10;
+    Mat r=y_test1.col(1);
+    double res[NbAUT];
+
+    for(int i=0;i<NbAUT;i++)
+        res[i]=0;
+
+    int rw=r.rows;
+    for(int i=0;i<rw;i++){
+    int j=r.at<float>(i,0);
+    cout << "test"<<j << endl;
+        res[j]++;
+    }
+
+
+    for(int i=0;i<NbAUT;i++){
+        res[i]=res[i]/rw;}
+
+
+    for(int i=0;i<NbAUT;i++)
+        cout <<"proba de " << res[i] << " pour l'auteur " << i+1<< endl;
+
+    //Test();
     //QApplication a(argc, argv);
     //MainWindow w;
     //w.show();
