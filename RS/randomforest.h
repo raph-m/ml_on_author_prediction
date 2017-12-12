@@ -16,14 +16,14 @@ public:
 
     void grow_forest(
           Dataset & dataset,
-          const unsigned int decision_column,
-          const unsigned int bootstrap_size,
-          const Dataset::KeyList & split_keys,
-          const unsigned int keys_per_node,
-          const unsigned int tree_count );
+          unsigned int decision_column,
+          unsigned int bootstrap_size,
+          Dataset::KeyList & split_keys,
+          unsigned int keys_per_node,
+          unsigned int tree_count );
 
     // classify a row using the majority vote from the forest
-    unsigned int classify (const double* const & row);
+    int classify (double * row);
 
     // clears the built forest
     void burn (void) {
@@ -66,22 +66,22 @@ private:
     private:
 
         Dataset & dataset;
-        const unsigned int decision_column;
-        const unsigned int bootstrap_size;
-        const Dataset::KeyList & split_keys;
-        const unsigned int keys_per_node;
-        const unsigned int tree_count;
-        RandomForest::ResultQueue * const result_queue;
+        unsigned int decision_column;
+        unsigned int bootstrap_size;
+        Dataset::KeyList & split_keys;
+        unsigned int keys_per_node;
+        unsigned int tree_count;
+        RandomForest::ResultQueue * result_queue;
 
     public:
 
         ForestTask(Dataset & dataset,
-                   const unsigned int decision_column,
-                   const unsigned int bootstrap_size,
-                   const Dataset::KeyList & split_keys,
-                   const unsigned int keys_per_node,
-                   const unsigned int tree_count,
-                   ResultQueue * const result_queue ) :
+                   unsigned int decision_column,
+                   unsigned int bootstrap_size,
+                   Dataset::KeyList & split_keys,
+                   unsigned int keys_per_node,
+                   unsigned int tree_count,
+                   ResultQueue * result_queue ) :
                      dataset(dataset),
                      decision_column(decision_column),
                      bootstrap_size(bootstrap_size),

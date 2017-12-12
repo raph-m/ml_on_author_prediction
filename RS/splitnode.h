@@ -7,14 +7,14 @@ class SplitNode : public Node {
 private:
 
     NodeSet children;
-    const unsigned int column;
-    const double threshold;
+    unsigned int column;
+    double threshold;
 
 public:
 
-    SplitNode(const std::string action,
-              const unsigned int column,
-              const double threshold) :
+    SplitNode(std::string action,
+              unsigned int column,
+              double threshold) :
         Node(action), column(column), threshold(threshold) {}
 
     virtual ~SplitNode (void) {
@@ -25,15 +25,15 @@ public:
         }
     }
 
-    virtual bool get_classification (void) const {
+    virtual bool get_classification (void) {
         return false;
     }
 
-    virtual bool is_leaf (void) const {
+    virtual bool is_leaf (void) {
         return false;
     }
 
-    virtual void add_child (Node* const node) {
+    virtual void add_child (Node* node) {
         children.push_back(node);
     }
 
@@ -41,11 +41,11 @@ public:
         return children;
     }
 
-    unsigned int get_column (void) const {
+    unsigned int get_column (void){
         return column;
     }
 
-    double get_threshold (void) const {
+    double get_threshold (void) {
         return threshold;
     }
 

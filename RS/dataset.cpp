@@ -7,7 +7,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //syntaxe appelant les constructeurs prédéfinis pour chaque élément après :
-Dataset::Dataset( const unsigned int rows, const unsigned int columns ) :
+Dataset::Dataset( unsigned int rows, unsigned int columns ) :
   data_ref(rows),
   data( new RealMatrix(rows, columns) ),
   usingRef(false)
@@ -21,7 +21,7 @@ Dataset::Dataset( const unsigned int rows, const unsigned int columns ) :
 
 //------------------------------------------------------------------------------
 
-Dataset::Dataset( Dataset & reference, const unsigned int rows ) :
+Dataset::Dataset( Dataset & reference, unsigned int rows ) :
   data_ref(rows),
   data(&reference.data_matrix()),
   usingRef(true)
@@ -41,7 +41,7 @@ Dataset::~Dataset( void )
 //------------------------------------------------------------------------------
 
 ProbaMap Dataset::count_thresh(
-        const unsigned int column, const double threshold ) const
+        unsigned int column, double threshold )
 {
   ProbaMap pmap;
   //on rappelle que pmap est de type std::map<std::string, double>
@@ -75,7 +75,7 @@ ProbaMap Dataset::count_thresh(
 
 //------------------------------------------------------------------------------
 
-Dataset::ThreshVector Dataset::get_thresh( const unsigned int column ) const
+Dataset::ThreshVector Dataset::get_thresh( unsigned int column )
 {
   ThreshVector thresholds;
   for ( unsigned int row = 0; row < get_row(); ++row )
@@ -88,7 +88,7 @@ Dataset::ThreshVector Dataset::get_thresh( const unsigned int column ) const
 //------------------------------------------------------------------------------
 
 DatasetSplitPair Dataset::split(
-        const unsigned int column, const double threshold )
+        unsigned int column, double threshold )
 {
 
   /* création d'un objet DatasetSplitPair
@@ -123,8 +123,8 @@ DatasetSplitPair Dataset::split(
 //------------------------------------------------------------------------------
 
 double Dataset::IG(
-  const unsigned int decision_column,
-  const unsigned int attribute_column,
+  unsigned int decision_column,
+  unsigned int attribute_column,
   // référence qui va contenir le meilleur seuil
   double & threshold )
 {
@@ -177,7 +177,7 @@ double Dataset::IG(
 
 //------------------------------------------------------------------------------
 
-Dataset Dataset::bootstrap_sample( const unsigned int sample_size )
+Dataset Dataset::bootstrap_sample( unsigned int sample_size )
 {
   Dataset sample( *this, sample_size );
   unsigned int rows = get_row();

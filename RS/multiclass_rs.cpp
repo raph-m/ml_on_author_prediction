@@ -52,7 +52,7 @@ void multiclass_rs::run_random_forest_train ( string train_filepath, string test
 
 
 
-
+    cout << "Training random forest..." << endl;
 
     // Load in dataset.
     string line;
@@ -68,15 +68,21 @@ void multiclass_rs::run_random_forest_train ( string train_filepath, string test
 
     // Create dataset.
     unsigned int row_count = lines.size();
-    unsigned int col_count = l1t.size() - 1; // ignore ID
+    int col_count = l1t.size() - 1; // ignore ID
     unsigned int feature_count = col_count - 1; // ignore class and ID
 
     // Dataset.
     Dataset dsr( row_count, col_count );
 
+    int labels [row_count];
+
+    labels[0] = atof(l1t[1].c_str());
+    for ( int col = 1; col < col_count; ++col )
+      dsr[0][col] = atof(l1t[col + 1].c_str());
+
     // Convert data.
 
-    for ( unsigned int row = 0; row < row_count; ++row ) {
+    for ( unsigned int row = 1; row < row_count; ++row ) {
         // Tokenize row.
         vector<string> tokens = Tokenize(lines[row], ",");
 
@@ -84,8 +90,8 @@ void multiclass_rs::run_random_forest_train ( string train_filepath, string test
         // Class is the second row of the csv, first row of dsr
         // for now we don't migrate the classes
         // Fetch the features
-
-        for ( unsigned int col = 1; col < col_count; ++col )
+        labels[row] = atof(l1t[1].c_str());
+        for ( int col = 1; col < col_count; ++col )
           dsr[row][col] = atof(tokens[col + 1].c_str());
     }
 
@@ -106,85 +112,30 @@ void multiclass_rs::run_random_forest_train ( string train_filepath, string test
 
     // les différents classificateurs 1 vs. all seront dans app_forests
 
+    cout << "Starting 1 vs. all classifications" << endl;
+
     for (int i=0; i < class_no;i++ ) {
 
-        // oversampling
-        // remplit avec un quart de i
+        cout << i << endl;
 
-        Dataset dsr_i( row_count, col_count );
-
-        int count_class_i = 0;
-        set<int> rows_i;
-
-        for ( unsigned int row = 0; row < row_count; ++row ){
-            if (fabs(dsr[row][0]- i) < 0.5){
-                count_class_i++;
-                rows_i.insert(row);
-            }
+        for (unsigned int row = 0; row < row_count ; ++row) {
+            if (labels[row] == i)
+                dsr[row][0] = 1.0;
+            else
+                dsr[row][0] = 0.0;
         }
 
-        set<int> rows_to_fill;
-        for ( unsigned int row = 0; row < row_count; ++row )
-            rows_to_fill.insert(row);
+        // Data should be loaded. Time to grow the forest.
+        cout << "Grow..." << endl;
+        RandomForest forest_classifier;
 
-        // on transforme la classe i en 1.0
-        int counter = 0;
-        for ( unsigned int row = 0; row < row_count; ++row ){
-            if (rows_i.find(row) != rows_i.end()){
-                  dsr_i[row][0] = 1.0;
-                    for ( unsigned int col = 1; col < col_count; ++col )
-                        dsr_i[row][col] = dsr[row][col];
-                    rows_to_fill.erase(row);
-            }
-        }
+        forest_classifier.grow_forest(dsr, 0, (dsr.get_row()*4) / 5, split_keys, 32, this->trees_per_forest );
 
-        while (counter < row_count / 4 - count_class_i) {
+        app_forests.push_back(&forest_classifier);
 
-            int random_row = rows_to_fill.size()*rand() / RAND_MAX;
-            set<int>::const_iterator ite(rows_to_fill.begin());
-            advance(ite,random_row);
-            int fill_row = *ite;
+        cout << "Grown!" << endl;
 
-            int randomize = (count_class_i - 1)*rand() / RAND_MAX;
-            set<int>::const_iterator it(rows_i.begin());
-            advance(it,randomize);
-            int curr_row = *it;
-
-            dsr_i[fill_row][0] = 1.0;
-            for ( unsigned int col = 1; col < col_count; ++col ){
-                dsr_i[fill_row][col] = dsr[curr_row][col];
-            }
-
-            rows_to_fill.erase(fill_row);
-            counter++;
-       }
-
-       while (!rows_to_fill.empty()) {
-
-            int fill_row = *(rows_to_fill.begin());
-
-            int taken_row = row_count * rand() / RAND_MAX;
-
-            if(fabs(dsr[taken_row][0] - i) > 0.5) {
-                dsr_i[taken_row][0] = 0.0;
-                for ( unsigned int col = 1; col < col_count; ++col )
-                    dsr_i[fill_row][col] = dsr[taken_row][col];
-                rows_to_fill.erase(fill_row);
-            }
-
-       }
-
-       // Data should be loaded. Time to grow the forest.
-       cout << "Grow..." << endl;
-       RandomForest forest_classifier;
-
-       forest_classifier.grow_forest(dsr_i, 0, (dsr_i.get_row()*4) / 5, split_keys, 32, 300 );
-
-       app_forests->push_back(&forest_classifier);
-
-       cout << "Grown!" << endl;
-
-  }
+   }
 
   // TEST
   // AND OUTPUT PERFORMANCE
@@ -197,6 +148,7 @@ void multiclass_rs::run_random_forest_train ( string train_filepath, string test
   // Load in dataset.
   lines.clear();
   ifstream file_tr( test_filepath, ios_base::in );
+
   while ( getline(file_tr, line, '\n') )
     lines.push_back( line );
 
@@ -210,31 +162,35 @@ void multiclass_rs::run_random_forest_train ( string train_filepath, string test
   feature_count = col_count - 1; // Class and n-1 features.
 
   // Dataset.
-  Dataset dsr_test( row_count, col_count );
+  Dataset * ds = null(Dataset);
+  ds = new Dataset(row_count, col_count);
 
-  // store true labels
-  vector<int> true_labels;
+  for (int col = 0; col < col_count; ++col )
+    (*ds)[0][col] = atof(l1t[col + 1].c_str());
+
+  // store true label0
+  double true_labels [row_count];
 
   // Convert data.
-  for ( unsigned int row = 0; row < row_count; ++row ) {
+  for (unsigned int row = 1; row < row_count; ++row ) {
+
     // Tokenize row.
     vector<string> tokens = Tokenize(lines[row], ",");
 
-    true_labels[row] = atof(tokens[1].c_str());
+    true_labels[row] = int(atof(tokens[1].c_str()));
 
     // First element is the ID. Skip.
-    // Second element is the class, we'll fetch 'em later
 
     // Fetch the rest of the features.
-    for ( unsigned int col = 1; col < col_count; ++col )
-      dsr_test[row][col] = atof(tokens[col + 1].c_str());
+    for (int col = 0; col < col_count; ++col )
+      (*ds)[row][col] = atof(tokens[col + 1].c_str());
   }
 
   // key = instance, value = max number of votes of a class for this instance
-  std::map<int, unsigned int> votes;
+  int votes [row_count];
   // key = instance, value = class
-  std::map<int, int> pred_labels;
-  for (unsigned int row = 0; row < dsr_test.get_row(); ++row) {
+  double pred_labels [row_count];
+  for (unsigned int row = 0; row < row_count; ++row) {
       votes[row] = 0;
       pred_labels[row] = 0;
   }
@@ -243,10 +199,12 @@ void multiclass_rs::run_random_forest_train ( string train_filepath, string test
 
       // on classe l'instance avec les forêts entraînées
 
-      RandomForest* classifier = (*app_forests)[i];
+      RandomForest* classifier = app_forests[i];
 
-      for ( unsigned int row = 0; row < dsr_test.get_row(); ++row ) {
-        unsigned int votes1 = classifier->classify(dsr_test[row]);
+      for (unsigned int row = 0; row < row_count; ++row ) {
+        cout << "ici73" << endl;
+        int votes1 = classifier->classify((*ds)[row]);
+        cout << "ici72" << endl;
         if (votes1 > votes[row]){
               votes[row] = votes1;
               pred_labels[row] = i;
@@ -255,10 +213,12 @@ void multiclass_rs::run_random_forest_train ( string train_filepath, string test
 
   }
 
+  cout << "ici8" << endl;
+
   //Evaluate
   unsigned int quality = 0;
 
-  for (unsigned int row =0; row < dsr_test.get_row(); ++row) {
+  for (unsigned int row =0; row < row_count; ++row) {
 
       // is the predicted class the right one?
       bool t = (true_labels[row] ==  pred_labels[row]);
@@ -267,7 +227,7 @@ void multiclass_rs::run_random_forest_train ( string train_filepath, string test
 
   }
 
-  cout << quality / dsr_test.get_row() << endl;
+  cout << quality / row_count << endl;
 
 }
 
@@ -312,9 +272,9 @@ int multiclass_rs::run_random_forest (string text_filepath) {
     }
 
     // key = instance, value = max number of votes of a class for this instance
-    std::map<int, unsigned int> votes;
+    int votes [row_count];
     // key = instance, value = class
-    std::map<int, int> pred_labels;
+    int pred_labels [row_count];
     for (unsigned int row = 0; row < dsr_test.get_row(); ++row) {
         votes[row] = 0;
         pred_labels[row] = 0;
@@ -324,10 +284,10 @@ int multiclass_rs::run_random_forest (string text_filepath) {
 
         // Classify the training data.
 
-        RandomForest* classifier = (*app_forests)[i];
+        RandomForest* classifier = app_forests[i];
 
         for ( unsigned int row = 0; row < dsr_test.get_row(); ++row ) {
-          unsigned int votes1 = classifier->classify(dsr_test[row]);
+          int votes1 = classifier->classify(dsr_test[row]);
           if (votes1 > votes[row]){
                 votes[row] = votes1;
                 pred_labels[row] = i;
@@ -341,8 +301,8 @@ int multiclass_rs::run_random_forest (string text_filepath) {
 
     for (int i=0; i < class_no; i++) {
         int curr_count = 0;
-        for ( unsigned int row = 0; row < dsr_test.get_row(); ++row ) {
-            if (votes[row] == i)
+        for (unsigned int row = 0; row < dsr_test.get_row(); ++row ) {
+            if (pred_labels[row] == i)
                 curr_count += votes[row];
         }
         if (curr_count > count_max) {

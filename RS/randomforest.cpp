@@ -9,11 +9,11 @@ using namespace std;
 
 void RandomForest::grow_forest(
   Dataset & dataset,
-  const unsigned int decision_column,
-  const unsigned int bootstrap_size,
-  const Dataset::KeyList & split_keys,
-  const unsigned int keys_per_node,
-  const unsigned int tree_count ) {
+  unsigned int decision_column,
+  unsigned int bootstrap_size,
+  Dataset::KeyList & split_keys,
+  unsigned int keys_per_node,
+  unsigned int tree_count ) {
 
     // if a forest exists, destroy it
     burn();
@@ -41,18 +41,19 @@ void RandomForest::grow_forest(
 
 // returns the number of tree that voted 1
 
-unsigned int RandomForest::classify (const double * const & row) {
+int RandomForest::classify (double * row) {
+
     if (forest.size() <= 0)
         return false;
+    int votes_1 = 0;
+    int size = forest.size();
 
-    unsigned int votes_0 = 0;
-    unsigned int votes_1 = 0;
-    for (unsigned int tree_index = 0; tree_index < forest.size(); ++tree_index) {
+    for (int tree_index = 0; tree_index < size; ++tree_index) {
+
         bool classification = forest[tree_index]->classify(row);
+        cout << classification << endl;
         if (classification)
-            ++ votes_1;
-        else
-            ++votes_0;
+            ++votes_1;
     }
 
     return votes_1;

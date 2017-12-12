@@ -37,6 +37,8 @@ void test_entropy (void) {
         cout << "Entropy 4 failed" << endl;
     }
 
+    cout << "Success 1" << endl;
+
 }
 
 void test_column (void) {
@@ -91,6 +93,8 @@ void test_column (void) {
             cout << "Column 11 failed" << endl;
     }
 
+    cout << "Success 2" << endl;
+
 }
 
 void test_matrix (void) {
@@ -117,6 +121,8 @@ void test_matrix (void) {
          }
        }
     }
+
+    cout << "Success 3" << endl;
 
 }
 
@@ -152,6 +158,8 @@ void test_constructor_dataset (void) {
     if (ds2.data_matrix().column_count() != cols)
         cout << "Dataset Constructor 7 failed" << endl;
 
+    cout << "Success 3" << endl;
+
 }
 
 void test_operator_array (void) {
@@ -176,6 +184,8 @@ void test_operator_array (void) {
         if (static_cast<unsigned int>(ds.data_matrix()[rows - r - 1][0]) != r + 8)
             cout << "Operator array 2 failed" << endl;
     }
+
+    cout << "Success 4" << endl;
 }
 
 void test_count_thresh (void) {
@@ -257,6 +267,8 @@ void test_count_thresh (void) {
     if (fabs(pmap["G"] - 1.0) > 1e-9)
         cout << "Count thresh 20 failed" << endl;
 
+    cout << "Success 5" << endl;
+
 }
 
 void test_get_thresh (void) {
@@ -276,6 +288,8 @@ void test_get_thresh (void) {
         if (fabs(thresholds[row] - static_cast<double>(row + 1)) > 1e-9)
             cout << "Get Thresh failed" << endl;
     }
+
+    cout << "Success 6" << endl;
 }
 
 void test_split (void) {
@@ -301,6 +315,8 @@ void test_split (void) {
         if (fabs(split.ds_g[row][0] - static_cast<double>(row + 5 + 1)) > 1e-9)
             cout << "Split 4 failed" << endl;
     }
+
+    cout << "Success 7" << endl;
 
 }
 
@@ -329,6 +345,8 @@ void test_IG (void) {
             cout << "IG failed" << threshold << class_thresh << endl;
     }
 
+    cout << "Success 8" << endl;
+
 }
 
 void test_bootstrap (void) {
@@ -352,6 +370,8 @@ void test_bootstrap (void) {
                 cout << "Bootstrap 2 failed" << endl;
         }
     }
+
+    cout << "Success 9" << endl;
 
 }
 
@@ -378,6 +398,8 @@ void test_leafnode (void) {
     set = node.get_children();
     if (static_cast<unsigned int>(set.size()) != 0u)
         cout << "LeafNode 5 failed" << endl;
+
+    cout << "Success 10" << endl;
 
 }
 
@@ -410,6 +432,8 @@ void test_splitnode (void) {
     if (dynamic_cast<SplitNode*>(set[0]) != newChild)
         cout << "SplitNode 7 failed" << endl;
 
+    cout << "Success 11" << endl;
+
 }
 
 /*
@@ -430,5 +454,5 @@ int main( const int argc, const char ** argv ) {
 
     return 0;
 
-} */
+}*/
 

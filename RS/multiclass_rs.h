@@ -15,12 +15,15 @@ class multiclass_rs {
 
 public:
 
-    vector<RandomForest*> * app_forests;
-    int class_no = 2;
+    int trees_per_forest;
+    int class_no;
+    vector<RandomForest*> app_forests;
 
 
-    multiclass_rs () {
-        this->app_forests = new vector<RandomForest*>();
+
+    multiclass_rs (int trees, int classes) {
+        trees_per_forest = trees;
+        class_no = classes;
     }
 
     void run_random_forest_train (string train_filepath, string test_filepath);

@@ -16,7 +16,7 @@ private:
 public:
 
     // constructeur
-    RealMatrix( const unsigned int rows, const unsigned int columns ) :
+    RealMatrix( unsigned int rows, unsigned int columns ) :
       rows(rows), columns(columns)
     {
       // allocation de la matrice des données
@@ -31,13 +31,13 @@ public:
     }
 
     // retourne rows
-    unsigned int get_row( void ) const
+    unsigned int get_row( void )
     {
       return rows;
     }
 
     // retourne colonne
-    unsigned int column_count( void ) const
+    unsigned int column_count( void )
     {
       return columns;
     }
@@ -45,11 +45,7 @@ public:
     /* pour rendre utilisation plus naturelle
      * retourne un pointeur au début de la ligne row
      */
-    const double * const operator[]( const unsigned int row ) const
-    {
-      return &data[row*columns];
-    }
-    double * const operator[]( const unsigned int row )
+    double * operator[]( unsigned int row )
     {
       return &data[row*columns];
     }

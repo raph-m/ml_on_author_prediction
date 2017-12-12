@@ -38,7 +38,6 @@ void test_setup_tree (void) {
     for (unsigned int col = 1; col < col_count; ++col)
         dsr[0][col] = atof(l1t[col - 1].c_str());
 
-    unsigned int donated = 0;
     for (unsigned int row = 1; row < dsr.get_row(); ++row) {
 
         // tokenize la ligne
@@ -76,12 +75,15 @@ void test_setup_tree (void) {
     RandomTree tree;
     tree.grow_decision_tree(dsr, split_keys, split_keys.size(),0);
 
+    cout << "Success 1" << endl;
+
 }
 
 void test_tree_constructor (void) {
     RandomTree tree;
     if (tree.get_root() != null(Node))
         cout << "Tree constructor failed" << endl;
+    cout << "Success 2" << endl;
 }
 
 void test_classify (void) {
@@ -113,9 +115,12 @@ void test_classify (void) {
     for (unsigned int row = 0; row < ds.get_row(); ++row) {
         bool correct_class = ds[row][0];
         bool classifier_return = tree.classify(ds[row]);
+        cout << correct_class << "     " << classifier_return << endl;
         if (classifier_return != correct_class)
             cout << "Classify failed" << endl;
     }
+
+    cout << "Success 3" << endl;
 
 }
 
@@ -187,9 +192,9 @@ void test_forest (void) {
 
     // on fait grandir la forêt
     cout << "Grow..." << endl;
-    RandomForest forest;
-    cout << ds->get_row() << endl;
-    forest.grow_forest(*ds, 0, ds->get_row()/3, split_keys, 16, 100);
+    RandomForest rand_forest;
+    int num_trees = 50;
+    rand_forest.grow_forest(*ds, 0, ds->get_row()/3, split_keys, 16, num_trees);
     cout << "Grown!" << endl;
 
     // on classifie les données
@@ -197,9 +202,10 @@ void test_forest (void) {
     unsigned int tn = 0;
     unsigned int fp = 0;
     unsigned int fn = 0;
-    for (unsigned int row = 0; row < ds->get_row(); ++row) {
-        bool c = forest.classify((*ds)[row]);
-        bool t = (*ds)[row][0] == 1.0;
+    for (unsigned int row = 0; row < row_count; ++row) {
+        bool c = 2*rand_forest.classify((*ds)[row]) > num_trees;
+        cout << c << endl;
+        bool t = fabs((*ds)[row][0] - 1.0) < 0.5;
         if (c&&t)
             ++tp;
         else if (c&&!t)
@@ -221,18 +227,20 @@ void test_forest (void) {
         << "True negative rate: " << true_negative_rate << "%\n"
         << "Recall            : " << recall << "%\n" << endl;
 
+    cout << "Success 4" << endl;
+
 }
 
 
 /*
-int main( const int argc, const char ** argv ) {
+int main() {
 
     //test_setup_tree();
-    test_tree_constructor();
-    test_classify();
+    //test_tree_constructor();
+    //test_classify();
     test_forest();
 
     return 0;
-}
-*/
+}*/
+
 

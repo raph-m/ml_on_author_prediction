@@ -3,14 +3,15 @@
 #include <list>
 #include <sstream>
 #include <stdlib.h>
+#include <iostream>
 
 using namespace std;
 
 void RandomTree::grow_decision_tree(
   Dataset & data,
-  const Dataset::KeyList & split_keys,
-  const unsigned int keys_per_node,
-  const unsigned int decision_column) {
+  Dataset::KeyList & split_keys,
+  unsigned int keys_per_node,
+  unsigned int decision_column) {
 
     burn();
 
@@ -24,11 +25,11 @@ void RandomTree::grow_decision_tree(
 
 void RandomTree::_grow_decision_tree(
   Dataset & data,
-  const Dataset::KeyList & split_keys,
-  const unsigned int keys_per_node,
-  const unsigned int decision_column,
-  Node * const parent,
-  const std::string action ){
+  Dataset::KeyList & split_keys,
+  unsigned int keys_per_node,
+  unsigned int decision_column,
+  Node * parent,
+  std::string action ){
 
     ProbaMap pm_class =
         data.count_thresh( decision_column, 0 );
@@ -111,9 +112,9 @@ void RandomTree::_grow_decision_tree(
 
 //------------------------------------------------------------------------------------------
 
-bool RandomTree::classify(const double* const & row) const {
+bool RandomTree::classify(double* row) {
 
-    Node* next_node = root;
+    Node * next_node = this->root;
 
     while (next_node != null(Node)){
         if(next_node->is_leaf())

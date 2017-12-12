@@ -10,7 +10,8 @@ SOURCES += \
     testDataPrep.cpp \
     randomforest.cpp \
     testRandom.cpp \
-    multiclass_rs.cpp
+    multiclass_rs.cpp \
+    main.cpp
 
 HEADERS += \
     dataset.h \
