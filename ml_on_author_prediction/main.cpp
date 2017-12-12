@@ -319,7 +319,6 @@ int main( int argc, char *argv[] )
     int rw=r.rows;
     for(int i=0;i<rw;i++){
     int j=r.at<float>(i,0);
-    cout << "test"<<j << endl;
         res[j]++;
     }
 
