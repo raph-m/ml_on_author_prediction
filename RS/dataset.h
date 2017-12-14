@@ -28,10 +28,10 @@ class Dataset
     typedef std::vector<double> ThreshVector;
 
     // constructeur par défaut
-    Dataset( unsigned int rows, unsigned int columns );
+    Dataset( const unsigned int rows, const unsigned int columns );
 
     // construit à partir d'un autre dataset
-    Dataset( Dataset & reference, unsigned int rows );
+    Dataset( Dataset & reference, const unsigned int rows );
 
     // destructeur
     ~Dataset( void );
@@ -43,12 +43,12 @@ class Dataset
      * les clés des valeurs inf au threshold
      * sont LE pour 'less or equal' et G pour 'greater'
      */
-    ProbaMap count_thresh(unsigned int column, double threshold );
+    ProbaMap count_thresh(const unsigned int column, const double threshold ) const;
 
     /* retourne liste des seuils à tester en évaluant column
      * il s'agit des valeurs de la colonne
      */
-    ThreshVector get_thresh(unsigned int column );
+    ThreshVector get_thresh( const unsigned int column ) const;
 
     /* divise effectivement le dataset selon les valeurs de la colonne
      * column avec le threshold
@@ -57,7 +57,7 @@ class Dataset
      * le deuxième contenant les valeurs > au threshold
      */
     DatasetSplitPair split(
-      unsigned int column, double threshold );
+      const unsigned int column, const double threshold );
 
     /* détermine IG (information gain) d'une feature (colonne)
      * pour percevoir le gain d'information que la division
@@ -68,8 +68,8 @@ class Dataset
      * threshold pointe vers lui à la fin, et retourne le gain associé
      */
     double IG(
-      unsigned int decision_column,
-      unsigned int attribute_column,
+      const unsigned int decision_column,
+      const unsigned int attribute_column,
       double & threshold );
 
     /* génère un bootstrap sample à partir du dataset
@@ -79,10 +79,14 @@ class Dataset
      * ces samples seront alors affecté chacun à un decision tree
      * différent pour lancer notre random forest
      */
-    Dataset bootstrap_sample( unsigned int sample_size );
+    Dataset bootstrap_sample( const unsigned int sample_size );
 
 
     // renvoie la matrice de données
+    const RealMatrix & data_matrix( void ) const
+    {
+      return *data;
+    }
     RealMatrix & data_matrix( void )
     {
       return *data;
@@ -92,7 +96,11 @@ class Dataset
      * renvoie un pointeur sur le début de la ligne row dans data
      * à partir des références aux lignes
      */
-
+    const double * const operator[]( const unsigned int row ) const
+    {
+      unsigned int data_index = data_ref[row];
+      return (*data)[data_index];
+    }
     double * operator[]( const unsigned int row )
     {
       unsigned int data_index = data_ref[row];
@@ -100,7 +108,7 @@ class Dataset
     }
 
     // retourne le nombre de lignes
-    unsigned int get_row( void )
+    unsigned int get_row( void ) const
     {
       return data_ref.get_row();
     }
@@ -108,24 +116,36 @@ class Dataset
     /* redimensionne le set de référence
      * et non pas le dataset en lui même
      */
-    void resize( unsigned int rows )
+    void resize( const unsigned int rows )
     {
       data_ref.resize( rows );
     }
 
     // renvoie l'array de référence aux lignes
+    const IntegerCol & data_reference( void ) const
+    {
+      return data_ref;
+    }
     IntegerCol & data_reference( void )
     {
       return data_ref;
     }
 
     // accès aux lignes
+    const unsigned int & operator()( const unsigned int row ) const
+    {
+      return data_ref[row];
+    }
     unsigned int & operator()( const unsigned int row )
     {
       return data_ref[row];
     }
 
     // renvoie liste des clé
+    const KeyList & get_keys( void ) const
+    {
+      return keys;
+    }
     KeyList & get_keys( void )
     {
       return keys;

@@ -25,7 +25,7 @@ class ProbaMap : public std::map<std::string, double>
      * pour pouvoir la changer en valeur mais pas en mémoire
      */
 
-    inline double entropy( void )
+    inline double entropy( void ) const
             {
               double entropy = 0.0;
               for (

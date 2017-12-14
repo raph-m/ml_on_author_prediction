@@ -15,7 +15,7 @@ public:
      * affecte la valeurs rows à notre champ rows
      * et crée data
      */
-    IntegerCol( unsigned int rows ) :
+    IntegerCol( const unsigned int rows ) :
       rows(rows)
 
     {
@@ -39,7 +39,7 @@ public:
     }
 
     // redimensionne la colonne
-    void resize( unsigned int rows2 )
+    void resize( const unsigned int rows2 )
     {
       // ne fait rien si c'est la même taille
       if ( rows2 != rows )
@@ -66,7 +66,7 @@ public:
     }
 
     // détermine si value est dans la colonne
-    bool contains( unsigned int value )
+    bool contains( const unsigned int value ) const
     {
       for ( unsigned int row = 0; row < rows; ++row )
       {
@@ -79,12 +79,16 @@ public:
     }
 
     // retourne rows
-    unsigned int get_row( void )
+    unsigned int get_row( void ) const
     {
       return rows;
     }
 
     //pour manipuler les colonnes naturellement
+    const unsigned int & operator[]( const unsigned int row ) const
+    {
+      return data[row];
+    }
     unsigned int & operator[]( const unsigned int row )
     {
       return data[row];

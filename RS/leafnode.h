@@ -6,28 +6,36 @@ class LeafNode : public Node {
 
 private:
 
-    bool classification;
+    const bool classification;
 
 public:
 
-    LeafNode(std::string action, bool classification) :
+    LeafNode(const std::string action, const bool classification) :
         Node(action), classification(classification) {
     }
 
-    virtual bool get_classification (void) {
+    virtual bool get_classification (void) const {
         return classification;
     }
 
-    virtual bool is_leaf (void) {
+    virtual bool is_leaf (void) const {
         return true;
     }
 
-    virtual void add_child (Node* node) {
-    }
+    virtual void add_child (Node* const node) {}
 
     virtual NodeSet get_children (void) {
         NodeSet set;
         return set;
     }
+
+    virtual std::string draw( void ) const
+        {
+          std::string draw_string =
+            "leaf(" + get_action() +
+            ")\\n" + (classification ? "1" : "0") +"\"";
+          return draw_string;
+        }
+
 
 };

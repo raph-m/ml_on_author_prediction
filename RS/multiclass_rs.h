@@ -17,8 +17,6 @@ public:
 
     int trees_per_forest;
     int class_no;
-    vector<RandomForest*> app_forests;
-
 
 
     multiclass_rs (int trees, int classes) {
@@ -26,8 +24,8 @@ public:
         class_no = classes;
     }
 
-    void run_random_forest_train (string train_filepath, string test_filepath);
+    void run_random_forest_test (string train_filepath, string test_filepath);
 
-    int run_random_forest (string text_filepath);
+    int run_random_forest (string train_filepath, string text_filepath);
 
 };

@@ -9,7 +9,7 @@ class Node {
 
 private:
 
-    std::string action;
+    const std::string action;
 
 public:
 
@@ -25,7 +25,7 @@ public:
 
     // const signifie que la méthode n'est pas autorisé
     // à changer l'objet à laquelle elle s'applique
-    std::string get_action (void) {
+    const std::string get_action (void) const {
         return action;
     }
 
@@ -33,13 +33,15 @@ public:
     // la syntaxe virtual ... = 0 veut dire que la méthode
     // est une méthode purement virtuelle
     // ie. on est obligé de la réécrire dans chaque sous-classe
-    virtual bool get_classification (void) = 0;
+    virtual bool get_classification (void) const = 0;
 
-    virtual bool is_leaf (void) = 0;
+    virtual bool is_leaf (void) const = 0;
 
-    virtual void add_child (Node* node) = 0;
+    virtual void add_child (Node* const node) = 0;
 
     virtual NodeSet get_children (void) = 0;
+
+    virtual std::string draw( void ) const = 0;
 
 };
 

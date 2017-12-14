@@ -13,7 +13,7 @@ void test_setup_tree (void) {
     // charger les données test
     string line;
     vector<string> lines;
-    ifstream file("data.data", ios_base::in);
+    ifstream file("/home/redouane/ml_on_author_prediction/RS/data.data", ios_base::in);
     while (getline(file, line, '\n'))
         lines.push_back(line);
 
@@ -130,7 +130,7 @@ void test_forest (void) {
     // charger les données
     string line;
     vector<string> lines;
-    ifstream file("seq.csv", ios_base::in);
+    ifstream file("/home/redouane/ml_on_author_prediction/RS/seq_very_sort.csv", ios_base::in);
     while (getline(file, line, '\n'))
         lines.push_back(line);
 
@@ -153,7 +153,7 @@ void test_forest (void) {
     Dataset * ds = new Dataset( row_count, col_count );
     Dataset & dsr = *ds;
 
-    // la classe est dans la deuxième collone
+    // la classe est dans la deuxième colonne
     dsr[0][0] = ( atof(l1t[1].c_str()) <= 1.0 ) ? 1.0 : 0.0;
     for (unsigned int col = 1; col < col_count; ++col)
         dsr[0][col] = atof(l1t[col+1].c_str());
@@ -195,6 +195,7 @@ void test_forest (void) {
     RandomForest rand_forest;
     int num_trees = 50;
     rand_forest.grow_forest(*ds, 0, ds->get_row()/3, split_keys, 16, num_trees);
+    cout << rand_forest.get_forest()[0]->draw() << endl;
     cout << "Grown!" << endl;
 
     // on classifie les données
@@ -202,9 +203,10 @@ void test_forest (void) {
     unsigned int tn = 0;
     unsigned int fp = 0;
     unsigned int fn = 0;
-    for (unsigned int row = 0; row < row_count; ++row) {
+    for (unsigned int row = 0; row < ds->get_row(); ++row) {
+
         bool c = 2*rand_forest.classify((*ds)[row]) > num_trees;
-        cout << c << endl;
+
         bool t = fabs((*ds)[row][0] - 1.0) < 0.5;
         if (c&&t)
             ++tp;
@@ -232,8 +234,9 @@ void test_forest (void) {
 }
 
 
+
 /*
-int main() {
+int main( const int argc, const char ** argv ) {
 
     //test_setup_tree();
     //test_tree_constructor();
@@ -241,6 +244,6 @@ int main() {
     test_forest();
 
     return 0;
-}*/
+} */
 
 

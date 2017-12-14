@@ -16,11 +16,11 @@ public:
 
     void grow_forest(
           Dataset & dataset,
-          unsigned int decision_column,
-          unsigned int bootstrap_size,
-          Dataset::KeyList & split_keys,
-          unsigned int keys_per_node,
-          unsigned int tree_count );
+          const unsigned int decision_column,
+          const unsigned int bootstrap_size,
+          const Dataset::KeyList & split_keys,
+          const unsigned int keys_per_node,
+          const unsigned int tree_count );
 
     // classify a row using the majority vote from the forest
     int classify (double * row);
@@ -33,6 +33,10 @@ public:
             *iter = null(RandomTree);
         }
         forest.clear();
+    }
+
+    Forest get_forest(){
+        return forest;
     }
 
 private:
@@ -66,22 +70,22 @@ private:
     private:
 
         Dataset & dataset;
-        unsigned int decision_column;
-        unsigned int bootstrap_size;
-        Dataset::KeyList & split_keys;
-        unsigned int keys_per_node;
-        unsigned int tree_count;
-        RandomForest::ResultQueue * result_queue;
+        const unsigned int decision_column;
+        const unsigned int bootstrap_size;
+        const Dataset::KeyList & split_keys;
+        const unsigned int keys_per_node;
+        const unsigned int tree_count;
+        RandomForest::ResultQueue * const result_queue;
 
     public:
 
         ForestTask(Dataset & dataset,
-                   unsigned int decision_column,
-                   unsigned int bootstrap_size,
-                   Dataset::KeyList & split_keys,
-                   unsigned int keys_per_node,
-                   unsigned int tree_count,
-                   ResultQueue * result_queue ) :
+                   const unsigned int decision_column,
+                   const unsigned int bootstrap_size,
+                   const Dataset::KeyList & split_keys,
+                   const unsigned int keys_per_node,
+                   const unsigned int tree_count,
+                   ResultQueue * const result_queue ) :
                      dataset(dataset),
                      decision_column(decision_column),
                      bootstrap_size(bootstrap_size),
