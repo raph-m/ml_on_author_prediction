@@ -24,7 +24,7 @@ public:
     // this function takes all articles and a Query document and returns the
     //K nearest documents of this query documents
     // ----------------------------------------------------------------------
-    virtual vector<vector<long>> operator()(const vector<vector<long>>& docs,const vector<long>& Input_doc)const=0;
+    virtual vector< vector<double> > operator()(const vector< vector<double> >& docs,const vector<double>& Input_doc)const=0;
     virtual ~KNN(){}
 
 };
@@ -47,7 +47,7 @@ public:
     // the dynamic data stucture have been chosen
     // to represent all documents
     // ------------------------------------------
-    virtual vector<vector<long>> operator()(const vector<vector<long>>& docs,const vector<long>& Input_doc)const;
+    virtual vector< vector<double> > operator()(const vector< vector<double> >& docs,const vector<double>& Input_doc)const;
 
     virtual ~BasicKNN() {}; //virtual destructor
 private:

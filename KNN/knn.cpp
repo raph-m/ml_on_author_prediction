@@ -19,18 +19,18 @@ BasicKNN::BasicKNN(int k_,Distances* dist_):k(k_),dist(dist_)
 //the arguments are :
 //         -Space of All documents : vector of vectors
 //         - Target document: Input_docs
-vector<vector<long>> BasicKNN:: operator()( const vector<vector<long>>& docs,const vector<long>& Input_doc)const{
+vector< vector<double> > BasicKNN:: operator()( const vector< vector<double> >& docs,const vector<double>& Input_doc)const{
     //---------------------------
     //Initialization Step
     //---------------------------
 
-    map<long,pair<vector<long>,long> > mapOfdocs;
+    map<double,pair<vector<double>,double> > mapOfdocs;
 
     //Step1: take the first K documents
-    vector< vector<long> >::const_iterator  it=docs.begin();
+    vector< vector<double> >::const_iterator  it=docs.begin();
     for(int i=1;i<=k;i++)
     {
-        mapOfdocs[i]=make_pair(*it,(*dist)(*it,Input_doc)); // the Key=i ,
+        mapOfdocs[i]=make_pair(*it, (double)((*dist)(*it,Input_doc))); // the Key=i ,
                                                       // the value=(doc, distance(doc, Input)
         it++;
     }
@@ -49,7 +49,7 @@ vector<vector<long>> BasicKNN:: operator()( const vector<vector<long>>& docs,con
 
     for(;it!=docs.end();it++)
     {
-        long delta=(*dist)(*it,Input_doc); // compute the distance
+        double delta= (double)(*dist)(*it,Input_doc); // compute the distance
 
         if(delta > mapOfdocs[k].second) continue; // do nothing if this doc is near than the Kth document
 
@@ -69,11 +69,11 @@ vector<vector<long>> BasicKNN:: operator()( const vector<vector<long>>& docs,con
     }
 
     //return K  most similar documents
-    vector<vector<long>> Results;
+    vector< vector<double> > Results;
 
     //reserve K empty documents
     Results.reserve(k);
-    map<long,pair<vector<long>,long> >::iterator Newit = mapOfdocs.begin();
+    map<double,pair<vector<double>,double> >::iterator Newit = mapOfdocs.begin();
     while(Newit != mapOfdocs.end())
     {
     Results.push_back(Newit->second.first);

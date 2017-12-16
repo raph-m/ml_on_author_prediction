@@ -17,7 +17,7 @@ public:
      Distances(){};
         // I have overloaded () operator to look like a function that calcules
         // the distance between two given vectors
-        virtual double operator()(const vector<long>& X1, const vector<long>& X2) const=0;
+        virtual double operator()(const vector<double>& X1, const vector<double>& X2) const;
         virtual ~Distances(){}
 
 };
@@ -30,7 +30,7 @@ class Euclidean : public Distances {
 
 public:
         Euclidean(int p_);
-        virtual double operator()(const vector<long>& X1, const vector<long>& X2) const;
+        virtual double operator()(const vector<double>& X1, const vector<double>& X2) const;
         virtual ~Euclidean();
 
 private:
@@ -47,8 +47,8 @@ private:
 class Cosine :public Distances {
 
 public:
-        Cosine();
-        virtual double operator()(const vector<long>& X1,const  vector<long>& X2) const;
+        Cosine(){};
+        virtual double operator()(const vector<double>& X1,const  vector<double>& X2) const;
         virtual ~Cosine();
 
 private:
