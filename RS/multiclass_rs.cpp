@@ -272,7 +272,7 @@ void multiclass_rs::run_random_forest_test ( string train_filepath, string test_
  * @param text_filepath
  */
 
-int multiclass_rs::run_random_forest (string train_filepath, string text_filepath) {
+int * multiclass_rs::run_random_forest (string train_filepath, string text_filepath) {
 
     // TRAIN & CLASSIFY
     // class_no classifiers 1 vs all
@@ -395,7 +395,7 @@ int multiclass_rs::run_random_forest (string train_filepath, string text_filepat
     // contient le plus grand nombre d'arbre ayant voté i pour un certain i
     int votes [row_count_test];
     // contient le i associé à la valeur dans vote
-    double pred_labels [row_count_test];
+    int pred_labels [row_count_test];
     for (unsigned int row = 0; row < row_count_test; ++row) {
         votes[row] = 0;
         pred_labels[row] = 0;
@@ -441,7 +441,7 @@ int multiclass_rs::run_random_forest (string train_filepath, string text_filepat
         }
 
    }
-
+/*
     // return best class
     int result = 0;
     int count_max = 0;
@@ -460,8 +460,9 @@ int multiclass_rs::run_random_forest (string train_filepath, string text_filepat
 
 
    cout << count_max << " " << row_count_test << endl;
+*/
 
-   return result;
+   return pred_labels;
 
 }
 
