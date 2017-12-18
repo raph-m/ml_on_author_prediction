@@ -1,4 +1,5 @@
 #include "ml_on_author_prediction/RS/multiclass_rs.h"
+#include <algorithm>
 
 using namespace std;
 
@@ -465,4 +466,6 @@ double * multiclass_rs::run_random_forest (string train_filepath, string text_fi
    return pred_labels;
 
 }
+
+
 
