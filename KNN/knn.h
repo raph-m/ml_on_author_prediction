@@ -3,6 +3,9 @@
 // -----------------------------
 #include<vector>
 #include "distances.h"
+#include <algorithm>    // std::random_shuffle
+#include <ctime>        // std::time
+#include <cstdlib>      // std::rand, std::srand
 // -----------------------------
 using  namespace std;
 
@@ -48,7 +51,7 @@ public:
     // to represent all documents
     // ------------------------------------------
     virtual vector< vector<double> > operator()(const vector< vector<double> >& docs,const vector<double>& Input_doc)const;
-
+    int KNN_randomized(vector<int>& authors, vector<double> input_doc);
     virtual ~BasicKNN() {}; //virtual destructor
 private:
     int k; // the number of nearseet neighbors

@@ -17,7 +17,7 @@
 using namespace std;
 
 // this function stores the data for a given Path-file.
-vector<vector<double>> Store_data(string Path,int k);
+vector<vector<double>> Store_data(string Path);
 
 //this function returns a map key= document , value= author
 map <vector<double>, double> BuildMap(vector<vector<double>> data);
@@ -28,6 +28,8 @@ double MFA( vector<double> Authors);
 // Final Step of the algorithm
 double* KNN(int NumbersofNeighbors, string FichierAClassifier , string TrainDataSet);
 
+// Casting function
+int* KNN_(int NumbersofNeighbors, string FichierAClassifier , string TrainDataSet);
 
 
 
