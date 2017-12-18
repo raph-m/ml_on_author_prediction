@@ -5,9 +5,9 @@
 #include <vector>
 #include <string.h>
 
-#include "column.h"
-#include "matrix.h"
-#include "probamap.h"
+#include "ml_on_author_prediction/RS/column.h"
+#include "ml_on_author_prediction/RS/matrix.h"
+#include "ml_on_author_prediction/RS/probamap.h"
 
 // dire au compilateur d'affecter l'adresse 0 pour les champs null
 #define null(type) reinterpret_cast<type*>(0)

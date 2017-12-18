@@ -1,8 +1,8 @@
 #pragma once
 
-#include "dataset.h"
-#include "leafnode.h"
-#include "splitnode.h"
+#include "ml_on_author_prediction/RS/dataset.h"
+#include "ml_on_author_prediction/RS/leafnode.h"
+#include "ml_on_author_prediction/RS/splitnode.h"
 
 class RandomTree {
 

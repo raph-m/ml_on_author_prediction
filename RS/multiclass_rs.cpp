@@ -1,4 +1,4 @@
-#include "multiclass_rs.h"
+#include "ml_on_author_prediction/RS/multiclass_rs.h"
 
 using namespace std;
 

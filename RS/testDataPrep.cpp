@@ -1,5 +1,5 @@
-#include "randomforest.h"
-#include "testDataPrep.h"
+#include "ml_on_author_prediction/RS/randomforest.h"
+#include "ml_on_author_prediction/RS/testDataPrep.h"
 
 #include <iostream>
 

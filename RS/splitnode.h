@@ -1,6 +1,6 @@
 #pragma once
 
-#include "node.h"
+#include "ml_on_author_prediction/RS/node.h"
 
 #include <sstream>
 
