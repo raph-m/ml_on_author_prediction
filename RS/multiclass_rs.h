@@ -26,6 +26,6 @@ public:
 
     void run_random_forest_test (string train_filepath, string test_filepath);
 
-    int * run_random_forest (string train_filepath, string text_filepath);
+    double * run_random_forest (string train_filepath, string text_filepath);
 
 };

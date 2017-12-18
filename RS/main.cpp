@@ -1,5 +1,6 @@
 #include "multiclass_rs.h"
 
+#include <time.h>
 
 int main() {
 
