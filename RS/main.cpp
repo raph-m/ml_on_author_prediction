@@ -8,14 +8,12 @@ using namespace std;
 int main() {
 
     int numberOfTrees = 3;
-    int row_count = 11;
+    int numberOfAuthors = 10;
     string train = "../../finalMatrix.csv";
     string test = "../../finalTest.csv";
-    multiclass_rs * classifier1 = new multiclass_rs(numberOfTrees, 10);
+    multiclass_rs * classifier1 = new multiclass_rs(numberOfTrees, numberOfAuthors);
+    // classifier1->run_random_forest_test(train, test);
     double * predictions_random_forest = classifier1->run_random_forest(train, test);
-    for (int j = 0; j < row_count; j++) {
-        cout << predictions_random_forest[j] << endl;
-    }
 
 
 }

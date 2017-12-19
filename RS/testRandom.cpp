@@ -13,7 +13,7 @@ void test_setup_tree (void) {
     // charger les données test
     string line;
     vector<string> lines;
-    ifstream file("/home/redouane/ml_on_author_prediction/RS/data.data", ios_base::in);
+    ifstream file("data.data", ios_base::in);
     while (getline(file, line, '\n'))
         lines.push_back(line);
 
@@ -130,7 +130,7 @@ void test_forest (void) {
     // charger les données
     string line;
     vector<string> lines;
-    ifstream file("/home/redouane/ml_on_author_prediction/RS/seq_very_sort.csv", ios_base::in);
+    ifstream file("seq.csv", ios_base::in);
     while (getline(file, line, '\n'))
         lines.push_back(line);
 
