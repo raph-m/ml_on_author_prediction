@@ -3,7 +3,7 @@
 using namespace std;
 
 // this function stores the data for a given Path-file.
-vector<vector<double>> Store_data(string Path,int k){
+vector<vector<double>> Store_data(string Path){
     ifstream in(Path);
 
     if(!in.is_open()) {
@@ -26,8 +26,7 @@ vector<vector<double>> Store_data(string Path,int k){
            if (ss.peek() == ',')
                ss.ignore();
             }
-        for(int l=0;l<k;l++)
-            vect.erase(vect.begin());
+
         data.push_back(vect);
 
     }
@@ -86,12 +85,12 @@ double MFA( vector<double> Authors)
 double* KNN(int NumbersofNeighbors, string FichierAClassifier , string TrainDataSet)
 {
     //Input
-    vector<vector<double>> TestData=Store_data(FichierAClassifier,1);
+    vector<vector<double>> TestData=Store_data(FichierAClassifier);
     BasicKNN* basicKnn = new BasicKNN(NumbersofNeighbors, new Cosine());
-    vector<vector<double>> TrainData=Store_data(TrainDataSet,2);
+    vector<vector<double>> TrainData=Store_data(TrainDataSet);
 
 
-    vector<vector<double>> MapData=Store_data(TrainDataSet,1);
+    vector<vector<double>> MapData=Store_data(TrainDataSet);
     map <vector<double>, double> MapOfdocs=BuildMap(MapData);
 
     int N=TestData.size();
@@ -114,7 +113,35 @@ double* KNN(int NumbersofNeighbors, string FichierAClassifier , string TrainData
     return Predictions;
 }
 
+// Casting function
+int* KNN_(int NumbersofNeighbors, string FichierAClassifier , string TrainDataSet)
+{
+    vector<vector<double>> Train_Data= Store_data(FichierAClassifier);
+    vector<vector<double>> Test_Data= Store_data(TrainDataSet);
+    // number of Authors
+    int NmbofAuthors= Train_Data.size();
+    // Call the Knn with the Cosine measure
+    BasicKNN* basicKnn = new BasicKNN(NumbersofNeighbors, new Cosine());
 
+    int* Authors= new int[NmbofAuthors];
+
+    // Loop over each documents to predect the author :
+    for(int j=0; j< NmbofAuthors; j++)
+    {
+        vector<double> Current_Doc(Train_Data.at(j));
+        vector<int> Authors_;
+
+        for(int l=0;l<Test_Data.size()-1;l++ )
+        {
+            vector<double> doc(Test_Data.at(l));
+            Authors_.push_back((int)doc[1]);
+
+        }
+        Authors[j]=basicKnn->KNN_randomized(Authors_,Current_Doc);
+    }
+    return Authors;
+
+}
 
 
 

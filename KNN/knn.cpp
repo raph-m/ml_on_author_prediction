@@ -81,4 +81,20 @@ vector< vector<double> > BasicKNN:: operator()( const vector< vector<double> >& 
     }
     return Results;
 
+};
+int BasicKNN::KNN_randomized(vector<int>& authors,vector<double> input_doc)
+{
+      vector<int> UniqueValue;
+      vector<int>::iterator it;
+      it = unique (authors.begin(), authors.end());
+      for (it=authors.begin(); it!=authors.end(); ++it)
+          UniqueValue.push_back(*it);
+
+      // using built-in random generator:
+      random_shuffle ( UniqueValue.begin(), UniqueValue.end() );
+
+      if(input_doc.size())
+          return UniqueValue.at(0);
+      // using myrandom:
+      //return UniqueValue[rand() % UniqueValue.size() ];
 }
