@@ -460,7 +460,7 @@ double * multiclass_rs::run_random_forest (string train_filepath, string text_fi
     }
 
 
-   cout << (double)count_max/row_count_test << endl;
+   cout << count_max<< endl;
 
 
    return pred_labels;
